@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+<meta charset="ISO-8859-1">
+<title>Customer Manager</title>
+</head>
+<body>
+<div align="center">	
+	<div sec:authorize="isAuthenticated()">
+		Welcome <b><span sec:authentication="name">Username</span></b>
+		&nbsp;
+		<i><span sec:authentication="principal.authorities">Roles</span></i>
+	</div>
+		
+	<form th:action="@{/logout}" method="post">
+		<input type="submit" value="Logout" />
+	</form>
+	
+	<h1>Customer Manager</h1>
+	<div sec:authorize="hasAnyAuthority('CREATOR', 'ADMIN')">
+		<a href="new">Create New Customer</a>
+	</div>
+	
+	<br/><br/>
+	<table border="1" cellpadding="10">
+		<thead>
+			<tr>
+				<th>UUID</th>
+				<th>First Name</th>
+				<th>Last Name</th>
+				<th>Street</th>
+				<th>Address</th>
+				<th>City</th>
+				<th>State</th>
+				<th>Email</th>
+				<th>Phone No</th>
+				
+				<th sec:authorize="hasAnyAuthority('ADMIN', 'EDITOR')">Actions</th>				
+				
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="customer : ${listCustomers}">
+				<td th:text="${customer.id}">Customer ID</td>
+				<td th:text="${customer.first_Name}">First Name</td>
+				<td th:text="${customer.last_Name}">Last Name</td>
+				<td th:text="${customer.street}">Street</td>
+				<td th:text="${customer.address}">Address</td>
+				<td th:text="${customer.city}">City</td>
+				<td th:text="${customer.state}">State</td>
+				<td th:text="${customer.email}">E-mail</td>
+				<td th:text="${customer.phone}">Phone</td>
+				
+				<td sec:authorize="hasAnyAuthority('ADMIN', 'EDITOR')">
+					<a th:href="@{'/edit/' + ${customer.id}}">Edit</a>			
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<a sec:authorize="hasAuthority('ADMIN')" th:href="@{'/delete/' + ${customer.id}}">Delete</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+</body>
+</html>
